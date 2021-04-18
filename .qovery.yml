@@ -1,0 +1,10 @@
+application:
+  name: ethereal-groves
+  project: nexusApps
+  publicly_accessible: true
+routers:
+- name: main
+  routes:
+  - application_name: ethereal-groves
+    paths:
+    - /

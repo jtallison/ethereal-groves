@@ -42,7 +42,7 @@ var hub = require('./js/hub');
 if (process.env.PORT) {
   hub.serverPort = process.env.PORT;
 } else {
-  hub.serverPort = 8080;
+  hub.serverPort = 3000;
 }
 
 // var serverPort = process.env.PORT || SERVER_PORT;
