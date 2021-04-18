@@ -6,7 +6,7 @@ application:
 routers:
 - name: "main-ethereal-groves"
   custom_domains:
-    - branch: "master"
+    - branch: "main"
       domain: "light.emdm.io"
   routes:
   - application_name: "ethereal-groves"
