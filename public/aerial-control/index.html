@@ -1,0 +1,317 @@
+<!doctype html>
+<!-- <html class="nxUIFix"> -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Aerial Armonica</title>
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <link rel="stylesheet" href="/glass-control/css/glass.css">
+  <link rel="stylesheet" href="/styles/anim.css">
+
+  <link href="https://fonts.googleapis.com/css?family=Vollkorn" rel="stylesheet" type="text/css">
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/js/Tone.js"></script>
+  <script type="text/javascript" src="/js/nexusUI.js"></script>
+  <script type="text/javascript" src="/js/Glass.js"></script>
+  <script type="text/javascript" src="/js/browserHub.js"></script>
+  <!-- <script type="text/javascript" src="/js/seriously.js"></script> -->
+  <!-- <script type="text/javascript" src="/js/effects/seriously.chroma.js"></script> -->
+  <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
+  <script src="https://emdm-lols-2020.storage.googleapis.com/aerial-control/aerialPlaylist.js"></script>
+  <!-- <script src="/aerial-control/aerialPlaylist.js"></script> -->
+  <!-- <script src="/aerial-control/aerialStarterPlaylist.js"></script> -->
+
+</head>
+
+<body>
+  <div class="display">
+
+    <div class="nexusOverlay">
+      <div class="overlayContent">
+          <div class="header blur"><span class="title">Aerial Armonica!</span>
+          </div>
+          <p>Sonic Artists | <strong>Jesse Allison | Austin Franklin | Saida Joshua-Smith</strong></p>
+          <p>Performance Artists | <strong>Nick Erickson | Rian | Laryn | Gabby | Paige </strong></p>
+          <p>Tap to enable the performance.</p>
+          <svg version="1.1" id="seatMap" x="0px" y="0px" viewbox="0 0 640 445" style="max-width: 70vh; enable-background:new 0 0 640 445;">
+            <rect x="4" y="4" style="fill:#FDF0DF; fill-opacity:0.77;stroke:#B3B3B3;stroke-width:8;stroke-miterlimit:10;" width="632"
+              height="437" />
+            <rect x="77.5" y="70" style="fill:none;stroke:#4D4D4D;stroke-width:8;stroke-miterlimit:10;" width="485.1"
+              height="350" />
+            <line style="fill:none;stroke:#4D4D4D;stroke-width:18;stroke-miterlimit:10;" x1="30" y1="40" x2="610" y2="40" />
+          </svg>
+      </div>
+    </div>
+
+    <div class="mainDisplay">
+      <div id='live-aerial'>
+        <!-- Live Aerial Baby - used with seriously.js chromakey or any canvas rendered options-->
+        <!-- <canvas id="live-aerial-display" width="720" height="480"></canvas>
+        <video src="/media/aerial/Silk3.m4v" id="aerial-live" style="display:none;"/> -->
+        <div id='twitch-stream' class='stream-work'></div>
+      </div>
+			<div id='glass-video-bank'>
+				<!-- Videos will be inserted here. -->
+      </div>
+    </div>
+
+    <!-- <div class="endDisplay" style="display: none;">
+      <p>
+        <br>
+        <br><em>Thanks for Listening!<br>
+          Please visit <a href="http://emdm.lsu.edu">emdm.lsu.edu</a> for more like this.</em>
+      </p>
+    </div> -->
+	</div>
+	
+	<div class="testingControls">
+		<div id="slider1"></div>
+		<br>
+		<button onClick="tapEnd()">Tap To End Session</button>
+  </div>
+  
+  <!-- // Method 2 - Apply svg filter in css. Check out the .footage class -->
+  <svg class="defs-only">
+    <filter id="chromakey" color-interpolation-filters="sRGB" x="0" y="0" height="100%" width="100%">
+      <feColorMatrix type="matrix"
+        values="1   0   0   0   0 
+                0   1   0   0   0  
+                0   0   1   0   0 
+                1.5 -2  1.5 0   1" />
+    </filter>
+  </svg>
+	
+	<script>
+    // var AudioContext = window.AudioContext || window.webkitAudioContext;
+    // var audioCtx = new AudioContext();
+
+		var Hub = require('hub');
+    var hub = new Hub();
+
+    hub.ctx = Tone.context.rawContext;
+    // Tone.setContext(audioCtx);
+    
+    hub.user.name = 'aerialPerformer';
+    hub.user.color = getRandomColor();
+    console.log(hub.user.color);
+    hub.user.location = {
+      x: 0.5,
+      y: 0.5
+    }
+
+    hub.init();
+
+    
+    // ****** Seriously.js for live video chromakeying
+    // let seriously,
+    //   aerialStreamy,
+    //   chroma,
+    //   target; // a wrapper object for our target canvas
+
+    // seriously = new Seriously();
+    // aerialStreamy = seriously.source('#aerial-live');
+    // target = seriously.target('#live-aerial-display');
+    // chroma = seriously.effect('chroma');
+
+    // // connect all our nodes in the right order
+    // chroma.source = aerialStreamy;
+    // chroma.clipBlack = 0.5;
+		// target.source = chroma;
+    // seriously.go();
+    // ***************** end Seriously.js
+
+	let coverBlur = document.getElementById('cover-blur');
+  let controlBlur = document.getElementById('control-blur');
+  let starfield = document.getElementById('star-field');
+  let stars = document.getElementsByClassName('star');
+  let liveAerial = document.getElementById('live-aerial');
+  let twitchStream = document.getElementById('twitch-stream');
+	
+	let sections = ['preConcert', 'performance', 'postConcert'];
+	let currentSection = 0;
+
+	let setMessage = (text) => {document.getElementById('message').innerText = text};
+  let messageText = {
+    'preConcert': { default: 'Welcome\npress a number...',
+                    1: 'Welcome Performer\nloading density...', 
+                    2: 'designing interstellar experience...', 
+                    3: 'initiating gravity...',
+                    4: 'Gravity|Density'
+                  },
+    'performance':  { default: 'listen...',
+                        doris: 'Sing it Doris!'
+                      },
+    'postConcert': { default: 'Thank you for listening' }
+  }
+
+      // ***************************
+      // Glass json playlist format
+      // title: 'Human readable'
+      // prefix: 'simple-nickname' // used to prefix all elements allowing for multiple glass pieces to be deployed.
+      // path: '/path/to/the/media/'  // prepended to all media file names.
+      // type = [one-shot,loop,sustain]
+      // minimum is t: {file: 'name.mp4'}
+      // Defaults:
+      //    id: created from prefix and letter
+      //    file: must be entered
+      //    size: {x: 320, y:180},
+      //    location: {x: 100, y:200},
+      //    sound: '',
+      //    text: '',
+      //    clickable: false,
+      //    fadeIn: 0.2,
+      //    fadeOut: 1,
+      //    type: 'sustain'
+
+      let aerialClips = aerialPlaylist;
+
+
+		function randomItem(list) {
+      return list[Math.floor(Math.random() * list.length)];
+		}
+		
+		hub.channel('cue', null, null, (data) => { cue(data); });
+
+		function cue(data) {
+			hub.log('Cue', data);
+			switch(data.name){
+				case 'preshow':
+					setMessage(messageText.preConcert[1]);
+					break;
+				case 'starfield':
+					revealStars(true)
+					setMessage(messageText.preConcert[2]);  // Make rotating
+					break;
+				case 'performance': 
+					revealStars(false)
+					setMessage(messageText.performance.default);
+					break;
+				case 'postshow': 
+					setMessage(messageText.postConcert.default);
+					break;
+				case 'demo':
+					break;
+				case 'default':
+					console.log('Sample Command not recognized: ', data.val, data.name);
+			}
+		}
+
+    let masterFaderNX = new Nexus.Slider('#slider1', {
+      'mode': 'absolute'
+    });
+    hub.channel('masterFader', null, null, function(data) {
+      masterFaderNX.value = data.val;
+      // gravSound.masterFader(data.val);
+      // gravSound.gain.gain.setValueAtTime(data.val, gravSound.tone.context.currentTime, 0.015);
+      glass.masterGain(data.val);
+    });
+    masterFaderNX.on('change', function(v) {
+      // do not send along if not changed from a user interaction.
+      // if (masterFaderNX.clicked) {
+      //   hub.send('masterFader', {
+      //     val: v
+      //   });
+      // };
+  	});
+  	
+  	// function titleClicked() {
+  	// 	// Respond?
+    // };
+
+  	hub.channel('enable', null, null, (data) => {enable(data);});
+
+    function enable(data) {
+      if (data.user === hub.user.name || data.user == 'all') {
+        if (data.val == true) {
+          // enable?
+        } else {
+  				// disable?
+  			}
+      }
+  	}
+
+    document.querySelector('#seatMap').addEventListener('click', async (e) => {
+      Tone.start()
+      console.log('audio processor is ready')
+      glass.loadVideos(aerialClips, 'glass-video-bank');  // playlist, div-ID
+      getClickPosition(e);
+      glass.addKeyCommands(); // Can be registered when needed.
+      glass.loadTwitchStream('twitch-stream') // Load Test Stream
+      console.log('key commands enabled')
+      liveAerial.classList.add('live');
+    });
+
+    function getClickPosition(e) {
+      var m = seatMap.getScreenCTM();
+      var p = document.getElementById('seatMap').createSVGPoint();
+      p.x = e.clientX;
+      p.y = e.clientY;
+      p = p.matrixTransform(m.inverse());
+      var tx = document.getElementById('seatMap').getAttribute("viewBox").split(" ")[2];
+      var ty = document.getElementById('seatMap').getAttribute("viewBox").split(" ")[3];
+      var mx = p.x / tx;
+      var my = p.y / ty;
+
+      hub.user.location.x = mx;
+      hub.user.location.y = my;
+      console.log(hub.user.location);
+
+      glass.triggerPitch();
+      // FIXME: move default overlay into Hub
+      // displays.overlay.style.display = 'none';
+      // displays.main.style.display = 'block';
+      // displays.concert.style.display = 'block';
+      document.getElementsByClassName("nexusOverlay")[0].style.display = 'none';
+      document.getElementsByClassName("mainDisplay")[0].style.display = 'block';
+    }
+
+    hub.channel('chat', null, null, function(data) {
+      console.log("chat: " + data);
+    });
+
+    hub.channel('glassState', null,null, (data)=> {
+      console.log('glassState', data);
+      masterFaderNX.value = data.masterFader;
+    });
+
+		    // ******* Sections *******
+		hub.channel('setSection', null, null, function(data) {
+      console.log("the section is now: " + data);
+      currentSection = data.section;
+      setMessage(messageText[sections[currentSection]].default);
+    });
+
+    hub.channel('setMessage', null, null, function(data) {
+      console.log(data);
+      console.log("the message is now: " + sections[currentSection] + data.message);
+      let sectionText = messageText[sections[currentSection]];
+      setMessage(sectionText[data.section][data.message]);
+      if('instruction' in data) {
+        setInstruction(data.instruction);
+      }
+		});
+		
+		function getRandomColor() {
+      var letters = '0123456789ABCDEF'.split('');
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+		}
+
+		hub.channel('play', null, null, (data) => {
+	    // console.log('play:', data);
+	    hub.log('play:', data);
+	  });
+
+		let glass = new Glass();
+    hub.user.pitch = glass.pitch;
+
+	</script>
+</body>
+</html>
+

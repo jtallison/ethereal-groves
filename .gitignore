@@ -1,3 +1,14 @@
+# nexus Specific
+
+project-info.md
+lol-project-info.md
+
+
+
+.DS_Store
+**.DS_Store
+
+
 # Logs
 logs
 *.log

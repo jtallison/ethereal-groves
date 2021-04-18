@@ -1,0 +1,617 @@
+<!doctype html>
+<html>
+<!-- <html class="nxUIFix"> -->
+
+<head>
+  <meta charset="utf-8">
+  <title>Light Pushes Through</title>
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/media/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/media/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/media/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/media/favicon/site.webmanifest">
+
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/glass-control/css/glass-viewer.css">
+
+  <link href="https://fonts.googleapis.com/css?family=Vollkorn" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/js/Tone.js"></script>
+  <script type="text/javascript" src="/js/nexusUI.js"></script>
+  <script type="text/javascript" src="/js/browserHub.js"></script>
+  <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
+
+  <!-- // Load Glass Works  -->
+  <script src="/js/Glass.js"></script>
+  <!-- <script src="/glass-control/glassPlaylist.js"></script> -->
+  <!-- <script src="https://emdm-lols-2020.storage.googleapis.com/glass-control/glassPlaylist.js"></script> -->
+  <script src="https://emdm-lols-2020.storage.googleapis.com/aerial-control/aerialPlaylist.js"></script>
+
+  <!-- <script src="js/wavesurfer.min.js"></script> -->
+  <!-- <script src="js/wavesurfer.regions.min.js"></script> -->
+
+</head>
+
+<body>
+  <div class="display">
+
+    <div id='star-field' class=''>
+      <div id='star-text'>Welcome to<br><span class='title-text'>Light Pushes Through</span><br>The performance site will open at 6:30</div>
+      <!-- <div class='star'>*</div>
+      <div class='star'>*</div>
+      <div class='star'>*</div>
+      <div class='star'>*</div>
+      <div class='star'>*</div> -->
+    </div>
+
+    <div id="cover-blur"><div id='cover-text'></div></div>
+    <div id="announce-div"><div id='announce-text'>Waiting for Performance to Begin . . .</div></div>
+
+    <div id="nx-overlay">
+      <div class="overlayContent">
+        <p>When We are Surrounded by Darkness... </p>
+          <div class="header blur"><!--<img src='/media/laptop-orchestra-logo.png' class='logo'/>--><span class="title">Light Pushes Through</span> 
+          </div>
+          <!-- <p>Director | Jesse Allison, Technical Managers | Austin Franklin, Dylen Burchett</p>
+          <p>Performers | Ka Hei Cheng, Scott Nelson, Matthew Bardin, Traci Fowler, Saida Joshua-Smith, Kenny Gorner, Gabriel Keowen,Robert Chedville, & Mary Moore</p> -->
+          <!-- <p><a href="#" onclick="showMoreInfo('lol-info')">Meet the LOLs!</a> | Performance begins at 7:30. | Click logo below to enter.</p> -->
+          <p>LSU Physical Theatre and Dance in collaboration
+            with Experimental Music & Digital Media</p>
+          <p>LIVE OUTDOOR PERFORMANCE! One Night Only!</p>
+          <p>We are all seeing the light through all we have been wading through this past year. Come enjoy a night of Multi-Media, Multi-Disciplinary Live Performance: Dance, Aerial, Physical Theatre, Original Music Performed Live, Projections on the Live Oaks</p>
+          <p>Monday, April 19th, 2021 at 7:30pm </p>  
+          <p>Outside in the Enchanted Forest, North of the Greek Ampitheater on LSU Campus, Baton Rouge</p> 
+          <p>Live-stream will be posted here and a link provided on the night of the concert. As the performance is in a remote location, the live-stream may not be stable. Recordings of the performance will be posted here the day after the show.</p>
+          <p>Please be prepared to stand for an hour or bring a chair. Think Mardi Gras!</p>
+          <!-- <div class='centered'><div id='high-def'></div></div> -->
+          <div>
+          <svg version="1.1" id="seatMap" x="0px" y="0px" viewbox="0 0 640 445" style="max-width: 70vh; enable-background:new 0 0 640 445;">
+            <defs>
+              <pattern id="lol-logo" patternUnits="userSpaceOnUse" x="77" width="485" height="485">
+                <image href="/media/lpt-image.png" x="0" y="0" width="485" height="485" />
+              </pattern>
+            </defs>
+            <rect x="4" y="4" style="fill:#92278F; fill-opacity:0.77;stroke:#B3B3B3;stroke-width:8;stroke-miterlimit:10;" width="632"
+              height="437" />
+            <rect x="77.5" y="70" style="fill:url(#lol-logo);stroke:#4D4D4D;stroke-width:8;stroke-miterlimit:10;" width="485.1"
+              height="350" />
+            <line style="fill:none;stroke:#4D4D4D;stroke-width:18;stroke-miterlimit:10;" x1="30" y1="40" x2="610" y2="40" />
+          </svg>
+        </div>
+          <p> Jesse Allison and Austin Franklin: Composers/Musicians
+            Nick Erickson: Physical Theatre Director; Assistant Director: Matthew Sauber Claudio Ribeiro and Paige Jarreau: Dance and Aerial Choreographers, Suellen Coelho: Costume Consultant</p>
+          <p>Dancers
+            Rebekah Fayard Seanelle Higgins Carolyn Hundley Morgan Khashou Georgia Krieger Kennedy Monroe Lauren Montgomery Kaitlyn Odell Jessica Speziale
+            Aerialists
+            Kendall Berry
+            Rian Briscoe Ashlynn Gremillion Paige Jarreau
+            Mya Orantes
+            Macy Marionneaux
+            Physical Theatre Performers Kendall Berry
+            Lani Daniels
+            Macy Marionneaux Mya Orantes
+            Jana Russo Olivia Sanders Sophia Sercovich</p>
+      </div>
+    </div>
+
+    <div id="main-display">
+      <!-- <div id="header" class="header">
+        <span class="title">LOLs Concert of Telepresence</span>
+      </div> -->
+      <div id='message'></div>  
+
+      <div id='aerial-video-bank' class='live-aerial glass-video-bank'>
+        <!-- Videos will be inserted here. -->
+      </div>
+
+    </div>
+
+    <div id="end-display" style="display: none;">
+      <p>
+        <br>
+        <br><em>Thanks for Listening!<br>
+          Please visit <a href="http://emdm.lsu.edu">emdm.lsu.edu</a> for more like this.</em>
+      </p>
+      <div id="footer">by <a href="https://emdm.lsu.edu">EMDM @ LSU</a></div>
+    </div>
+	</div>
+
+  <div id="testing-controls">
+		<div id="slider1"></div>
+		<br>
+		<button onClick="tapEnd()">Tap To End Session</button>
+	</div>
+
+  <script>
+    let standalone = false;
+    
+    // var AudioContext = window.AudioContext || window.webkitAudioContext;
+    // var audioCtx = new AudioContext();
+
+		var Hub = require('hub');
+    var hub = new Hub();
+
+    // hub.ctx = audioCtx;
+    // Tone.setContext(audioCtx);
+    hub.ctx = Tone.context.rawContext;
+    
+    hub.user.name = "a_user_" + Math.floor(Math.random() * 99999);
+    hub.user.color = getRandomColor();
+    console.log(hub.user.color);
+    hub.user.location = {
+      x: 0.5,
+      y: 0.5
+    }
+
+    hub.init();
+      // Register early so I can control overlays & Announcements.
+    hub.user.location.x = 0.5;
+    hub.user.location.y = 0.5;
+    console.log(hub.user.location);
+    hub.register();
+
+  let coverBlur = document.getElementById('cover-blur');
+  let coverText = document.getElementById('cover-text');
+  let announceDiv = document.getElementById('announce-div');
+  let announceText = document.getElementById('announce-text');
+  let starfield = document.getElementById('star-field');
+  let starfieldText = document.getElementById('star-text');
+  let stars = document.getElementsByClassName('star');
+  
+  let displays = {};
+  displays.overlay = document.getElementById('nx-overlay');
+  displays.concert = document.getElementById('concert-display');
+  displays.main = document.getElementById('main-display');
+  displays.end = document.getElementById('end-display');
+  displays.testControls = document.getElementById('testing-controls');
+
+  let works = document.getElementsByClassName('work');
+
+	let sections = ['preConcert', 'performance', 'postConcert'];
+	let currentSection;
+
+	let setMessage = (text) => {document.getElementById('message').innerText = text};
+  let messageText = {
+    'preConcert': { default: 'Welcome\npress a number...',
+                    1: 'Welcome Performer\nloading density...', 
+                    2: 'designing interstellar experience...', 
+                    3: 'initiating gravity...',
+                    4: 'Gravity|Density'
+                  },
+    'performance':  { default: 'listen...',
+                        doris: 'Sing it Doris!'
+                      },
+    'postConcert': { default: 'Thank you for listening' }
+  }
+
+
+
+    // let glassClips = {
+		// 	g: '/media/notes-mp4/G-note-Small.mp4',
+		// 	a: '/media/notes-mp4/A-low-Small.mp4', 
+		// 	b: '/media/notes-mp4/B-note-Small.mp4',
+		// 	c: '/media/notes-mp4/C-note-Small.mp4',
+		// 	d: '/media/notes-mp4/D-note-Small.mp4',
+		// 	e: '/media/notes-mp4/E-note-Small.mp4',
+		// 	f: '/media/notes-mp4/Fs-note-Small.mp4',
+		// 	G: '/media/notes-mp4/G-highNote-Small.mp4',
+		// 	bass: '/media/notes-mp4/E-bass-Small.mp4',
+		// 	squeek: '/media/notes-mp4/G-highSqueek-Small.mp4'
+		// }
+
+		// let videoBank = document.getElementById('video-bank');
+    // concertSound.loadGlassVideos()
+    // let aerialClips = aerialPlaylist;
+    // let kitchenClips = kitchenPlaylist;
+    // let glassClips = glassPlaylist;
+
+		function randomItem(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+    
+    function randomTakeItem(list) {
+      let item = list.splice(Math.floor(Math.random() * list.length),1)
+      return item[0];
+		}
+		
+		hub.channel('cue', null, null, (data) => { cue(data); });
+
+		function cue(data) {
+			hub.log('Cue', data);
+			switch(data.name){
+				case 'preshow':
+					setMessage(messageText.preConcert[1]);
+					break;
+				case 'starfield':
+					revealStars(true)
+					setMessage(messageText.preConcert[2]);  // Make rotating
+					break;
+				case 'performance': 
+					revealStars(false)
+					setMessage(messageText.performance.default);
+					break;
+				case 'postshow': 
+					setMessage(messageText.postConcert.default);
+					break;
+				case 'demo':
+					break;
+				case 'default':
+					console.log('Sample Command not recognized: ', data.val, data.name);
+			}
+		}
+
+    function showMoreInfo(moreInfoDiv) {
+      console.log('more-info', event);
+      let moreInfo = document.getElementById(moreInfoDiv);
+      moreInfo.classList.add('show-more-info');
+    }
+
+    function showLessInfo(moreInfoDiv) {
+      console.log('less-info', event)
+      let moreInfo = document.getElementById(moreInfoDiv);
+      moreInfo.classList.remove('show-more-info');
+    }
+
+  // Starfield & Stars
+	function setRandomAnimationDuration(star) {
+    star.style.animationDuration = Math.floor(Math.random() * 10 + 1) + "s";
+  }
+
+  Object.entries(stars).forEach (([number, star]) => {
+    star.addEventListener("transitionend", setRandomAnimationDuration(star));
+    star.addEventListener('ontouch', () => {
+
+    });
+  })
+
+  function revealStars(enable=true) {
+    if(enable) {
+      starfield.style.display = 'block';
+      starfield.classList.add('fade-in');
+      coverBlur.style.display = 'block';
+      coverBlur.classList.add('fade-in');
+      Object.entries(stars).forEach (([number, star]) => {
+        star.classList.add('star-slide');
+      })
+    } else {
+      starfield.classList.remove('fade-in');
+      Object.entries(stars).forEach (([number, star]) => {
+        star.classList.remove('star-slide');
+      })
+      starfield.style.display = 'none';
+      coverBlur.classList.remove('fade-in');
+      coverBlur.style.display = 'none';
+    }
+  }
+
+  function controlBlurring(enable=true) {
+    if(enable) {
+      controlBlur.style.top = gravSound.wavesurferDiv.offsetTop+"px";
+      controlBlur.style.display = 'block';
+      controlBlur.classList.add('fade-in');
+    } else {
+      controlBlur.classList.remove('fade-in');
+      controlBlur.style.display = 'none';
+    }
+  }
+
+  // let lowDefNX = new Nexus.TextButton('#high-def', {
+  //   'size': [150,50],
+  //   'state': false,
+  //   'text': 'Low Bandwidth',
+  //   'alternateText': 'High Def',
+  //   'mode': 'toggle'
+  // })
+  // lowDefNX.on('change', (v)=> {
+  //   if(v){
+  //     concertSound.hd = true;
+  //   } else {
+  //     concertSound.hd = false;
+  //   }
+  // })
+  
+  let masterFaderNX = new Nexus.Slider('#slider1', {
+    'mode': 'absolute'
+  });
+  hub.channel('masterFader', null, null, function(data) {
+    console.log('masterFader', data)
+    masterFaderNX.value = data.val;
+    // gravSound.masterFader(data.val);
+    // gravSound.gain.gain.setValueAtTime(data.val, gravSound.tone.context.currentTime, 0.015);
+    concertSound.masterGain(data.val);
+  });
+  masterFaderNX.on('change', function(v) {
+    // do not send along if not changed from a user interaction.
+    // if (masterFaderNX.clicked) {
+    //   hub.send('masterFader', {
+    //     val: v
+    //   });
+    // };
+  });
+
+  hub.channel('announcement', null, null, (data)=> {
+    console.log('Announcement', data);
+    if((data.announcement != undefined) && (data.announcement != "") && data.live) {
+      // Set text on Announcement div
+      announceText.innerHTML = data.announcement;
+      announceDiv.classList.add('announce-all');
+    } else if (data.live == false || data.announcement == "") {
+      announceDiv.classList.remove('announce-all');
+    } 
+    if (data.star){
+      if(data.live){
+        if(starfield.classList.contains('starfieldOn')) {
+          starfield.classList.remove('starfieldOn')
+        } else {
+          starfield.classList.add('starfieldOn')
+        }
+      } else {
+        starfield.classList.remove('starfieldOn')
+      }
+    } else if (data.cover) {
+      if(data.live){
+        if(coverBlur.classList.contains('coverOn')) {
+          coverBlur.classList.remove('coverOn')
+        } else {
+          coverBlur.classList.add('coverOn')
+        }
+      } else {
+        coverBlur.classList.remove('coverOn')
+      }
+    }
+  })
+
+  hub.channel('questions', null, null, (data)=>{
+    console.log('questions', data)
+    if(data.currentQuestion) {
+      questions.innerHTML = data.currentQuestion;
+    }
+  })
+
+      // Probably move inside artwork.js
+  // let questions = document.querySelector('#q-and-a .questions');
+  // let questionToAsk = document.querySelector('#my-question');
+  //   let askNX = new Nexus.TextButton('#ask-my-question', {
+  //     'size': [150,50],
+  //     'state': false,
+  //     'text': 'Ask'
+  //     // 'alternateText': 'Stop'
+  //   })
+  //   askNX.on('change', (v)=> {
+  //     if(v){
+  //       console.log('Ask: ', questionToAsk.value)
+  //       hub.send('questions', {
+  //         askQuestion: questionToAsk.value
+  //       })
+  //       questionToAsk.value = "";
+  //     }
+  //   })
+	
+	function titleClicked() {
+		// Respond?
+  };
+
+	hub.channel('enable', null, null, (data) => {enable(data);});
+
+  function enable(data) {
+    if (data.user === hub.user.name || data.user == 'all') {
+      if (data.val == true) {
+        // enable?
+      } else {
+				// disable?
+			}
+    }
+	}
+	
+	// seatMap.addEventListener("click", getClickPosition, false);
+  // StartAudioContext(Tone.context, '#seatMap').then(function() {
+  //   console.log("AudioStarted");
+  //   //reverb.generate();
+  // })
+  // let concertSound;
+  document.querySelector('#seatMap').addEventListener('click', async (e) => {
+    // await Tone.start()
+    Tone.start()
+    // concertSound = new ConcertSound();
+    // hub.user.pitch = concertSound.pitch;
+    console.log('audio processor is ready')
+    concertSound.loadWorks();
+    console.log('Loading Works...')
+    getClickPosition(e);
+    if (standalone) {         // Setup Standalone Interactions
+      standaloneClicks();
+    }
+    hub.send('concert', {getState: true});
+  })
+
+  function getClickPosition(e) {
+    var m = seatMap.getScreenCTM();
+    var p = document.getElementById('seatMap').createSVGPoint();
+    p.x = e.clientX;
+    p.y = e.clientY;
+    p = p.matrixTransform(m.inverse());
+    var tx = document.getElementById('seatMap').getAttribute("viewBox").split(" ")[2];
+    var ty = document.getElementById('seatMap').getAttribute("viewBox").split(" ")[3];
+    var mx = p.x / tx;
+    var my = p.y / ty;
+
+    hub.user.location.x = mx;
+    hub.user.location.y = my;
+    console.log(hub.user.location);
+
+    // concertSound.triggerPitch();
+    // hub.register();
+    // FIXME: move default overlay into Hub
+    // displays.overlay.style.display = 'none';
+    displays.overlay.classList.add('no-display');
+    // displays.main.style.display = 'block';
+    displays.concert.classList.remove('no-display');
+  }
+
+  function standaloneClicks() {
+    for (let work of works) {
+      console.log('work', work)
+      work.addEventListener('click', function() {
+        // e = e || window.event;
+        // var target = e.target || e.srcElement;
+        console.log(this);    // This is the div id, not the piece id e.g. work-1
+        let artwork = concertSound.artworks.find((obj) => {
+          let returnedWork = obj.divID === this.id;
+          return returnedWork
+        })
+        if(artwork.staged) {    // If already playing, stop and unstage
+          concertSound.pauseWork(artwork.name);
+          concertSound.stopWork(artwork.name);
+          if(artwork.artistTalk) { concertSound.playArtistTalk(artwork.name, false)}
+          concertSound.stageWork(artwork.name, false);
+        } else {        // Stage, then start the work.
+          // go large
+          concertSound.stageWork(artwork.name, true);
+          //delay & play the recording
+          if(artwork.artistTalk) { 
+            setTimeout((workName)=>{
+              concertSound.playArtistTalk(workName, true)
+              duration = (concertSound.getWork(workName).artistTalkDiv.duration * 1000) + 6000;
+              setTimeout((workName)=>{
+                concertSound.playWork(workName);
+              }, duration, workName);
+            }, 3000, artwork.name);
+          } else {
+            setTimeout((workName)=>{
+              concertSound.playWork(workName);
+            }, 3000, artwork.name);
+          }
+        }
+      }, this.id);
+    }
+  }
+
+  hub.channel('chat', null, null, function(data) {
+    console.log("chat: " + data);
+  });
+
+  hub.channel('glassState', null,null, (data)=> {
+    console.log('glassState', data);
+    masterFaderNX.value = data.masterFader;
+  });
+
+  hub.channel('concert', null, null, (data) =>{
+    console.log('concert', data);
+    if (data.masterFader){
+      masterFaderNX.value = data.masterFader;
+    }
+    if (data.section != currentSection) {
+      currentSection = data.section;
+    }
+    if(concertSound.playlistLoaded && data.currentWork != concertSound.currentWork){
+      if(data.currentWork) {
+        concertSound.stageWork(data.currentWork, true)
+      } else {
+        concertSound.stageWork(concertSound.currentWork, false)
+      }
+    }
+    if(data.twitchChannel != concertSound.twitchChannel) {
+      concertSound.twitchChannel = data.twitchChannel;
+    }
+  })
+
+	    // ******* Sections *******
+	hub.channel('setSection', null, null, function(data) {
+    console.log("the section is now: " + data);
+    currentSection = data.section;
+    setMessage(messageText[sections[currentSection]].default);
+  });
+
+  hub.channel('setMessage', null, null, function(data) {
+    console.log(data);
+    console.log("the message is now: " + sections[currentSection] + data.message);
+    let sectionText = messageText[sections[currentSection]];
+    setMessage(sectionText[data.section][data.message]);
+    if('instruction' in data) {
+      setInstruction(data.instruction);
+    }
+	});
+	
+	function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+	}
+  hub.channel('play', null, null, (data) => {
+    // console.log('play:', data);
+    hub.log('play:', data);
+    if(data.val) {
+      // concertSound.playVideo(data.video);
+      if(concertSound.currentWork == data.work) {
+        glass.playVideo(data.video, data.work)
+      } else {
+        console.log(data.work + ' not currently staged');
+      }
+    } else {
+      // concertSound.pauseVideo(data.video);
+      glass.pauseVideo(data.video, data.work)
+    }
+  });
+  
+      // Redundant - handled in artwork channel now
+  // hub.channel('playWork', null, null, (data) => {
+  //   // console.log('play:', data);
+  //   hub.log('playWork:', data);
+  //   if(data.val) {
+  //     concertSound.playWork(data.work);
+  //   } else {
+  //     concertSound.pauseWork(data.work);
+  //   }
+  // });
+
+  // artwork: {stage: true, play: true, pause: true, stop: true}
+  hub.channel('artwork', null, null, (data) => {
+    hub.log('artwork:', data);
+    if(data.stage != undefined) {
+      concertSound.stageWork(data.work, data.stage);
+    }
+    if(data.play != undefined) {
+      concertSound.playWork(data.work);
+    }
+    if(data.pause != undefined) {
+      concertSound.pauseWork(data.work);
+    }
+    if(data.stop != undefined) {
+      concertSound.stopWork(data.work);
+    }
+    if(data.seek != undefined) {
+      concertSound.playWork(data.work, data.seek);
+    }
+    if(data.gain != undefined) {
+      concertSound.gainWork(data.work, data.gain);
+    }
+    if(data.artistTalk != undefined) {
+      // data.work [work name], data.artistTalk [true, false]
+        concertSound.playArtistTalk(data.work, data.artistTalk);
+    }
+    if(data.setTwitchChannel != undefined) {
+      // data.work [work name], data.artistTalk [true, false]
+        concertSound.setTwitchChannel(data.channel);
+    }
+  })
+
+  hub.channel('stageWork', null, null, (data)=>{
+    console.log('stageWork', data);
+    concertSound.stageWork(data.work, data.stage)
+  })
+	
+	// let concertSound = new ConcertSound();
+	let concertSound = new Artworks();
+  let glass = new Glass();
+  glass.gain.disconnect();
+  glass.gain.connect(concertSound.gain);
+</script>
+</body>
+</html>

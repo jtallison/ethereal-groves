@@ -1,0 +1,165 @@
+body {
+    /*	display: flex;
+	align-items: center;
+	justify-content: center;*/
+    font-family: 'Vollkorn', serif;
+    font-size: 1.0em;
+    /*position: fixed;*/
+    background-color: black;
+    color: rgb(150, 150, 150);
+}
+
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#master {
+  width: 100%;
+}
+
+#master-fader {
+  width: 200px;
+  height: 50px;
+  display: inline-block;
+}
+
+#announcement {
+  margin: 0 auto;
+  width: 80%;
+  height: 10%;
+}
+#announce {
+  width: 15% !important;
+  height: 50px !important;
+  display: inline-block !important;
+  /* margin: 0 auto !important; */
+}
+
+#current-question {
+  margin: 1% 1%;
+  width: 100%;
+  height: fit-content;
+  font-size: 1.3em;
+}
+#question {
+  width: 80%;
+  height: 50px;
+}
+#ask-a-question {
+  width: 15% !important;
+  height: 50px !important;
+  display: inline-block !important;
+}
+
+#question-list {
+  width: 100% !important;
+  height: 50px !important;
+  margin: 1% 0px;
+}
+
+
+#artworks {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background-color: #212121;
+}
+
+.work-title {
+  font-size: 25px;
+  width: 25%;
+  height: 50px;
+  margin: 1% 1%;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.stage-toggle {
+  width: 100px !important;
+  height: 50px !important;
+}
+
+.play-button, .stop-button, .talk-button {
+  width: 50px !important;
+  width: 50px !important;
+}
+
+.seek-number {
+  font-size: 1em !important;
+}
+
+.gain-slider {
+  width: 200px !important;
+  height: 30px !important;
+}
+
+.sw {
+    text-align: center;
+}
+
+.sw p {
+    font-size: 1.0em
+}
+
+.sw .url {
+    font-size: 1.5em
+}
+
+#typed-text {
+    white-space: pre;
+    font-size: 7em;
+    justify-content: center;
+}
+
+.symbol {
+    font-size: 2.0em;
+}
+
+.sec {
+    border: 2px solid rgb(100, 0, 0);
+}
+
+.sec:before {
+    /*font-size: 2em;*/
+    /*content: "-NEXT SECTION-";*/
+}
+
+.sec:hover {
+    background-color: rgb(0, 50, 0);
+}
+
+.sec:active {
+    background-color: grey;
+}
+
+small {
+    font-size: 0.5em;
+}
+
+a {
+    display: inline-block;
+    border: 5px solid red;
+    font-size: 2em;
+    margin: 10px;
+    color: blue;
+}
+
+a:hover {
+    background-color: white;
+    color: red;
+}
+
+a:active {
+    background-color: purple;
+    color: orange;
+}
+
+a:visited {
+    color: purple;
+}
