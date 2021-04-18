@@ -2,7 +2,7 @@ application:
   name: "ethereal-groves"
   project: "ethereal-groves"
   organization: "QoveryCommunity"
-  publicly_accessible: true
+  # publicly_accessible: true
 routers:
 - name: "main-ethereal-groves"
   custom_domains:
