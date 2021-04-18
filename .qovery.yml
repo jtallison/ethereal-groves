@@ -5,6 +5,9 @@ application:
   publicly_accessible: true
 routers:
 - name: "main-ethereal-groves"
+  custom_domains:
+    - branch: "master"
+      domain: "light.emdm.io"
   routes:
   - application_name: "ethereal-groves"
     paths:
