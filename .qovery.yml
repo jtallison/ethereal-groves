@@ -1,10 +1,12 @@
 application:
-  name: ethereal-groves
-  project: nexusApps
+  name: "ethereal-groves"
+  project: "ethereal-groves"
+  organization: "QoveryCommunity"
   publicly_accessible: true
 routers:
-- name: main
+- name: "main-ethereal-groves"
   routes:
-  - application_name: ethereal-groves
+  - application_name: "ethereal-groves"
     paths:
-    - /
+    - "/*"
+
