@@ -1,0 +1,11 @@
+---
+application:
+  name: "ethereal-groves"
+  project: "ethereal-groves"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-ethereal-groves"
+  routes:
+  - application_name: "ethereal-groves"
+    paths:
+    - "/*"
