@@ -1,0 +1,672 @@
+<!doctype html>
+<html class="nxUIFix">
+<head>
+  <title>LOLs 2020 Conductor</title>
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> -->
+
+  <link rel="stylesheet" href="/styles/controller.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/js/Tone.js"></script>
+  <script type="text/javascript" src="/js/nexusUI.js"></script>
+  <script type="text/javascript" src="/js/browserHub.js"></script>
+  <script type="text/javascript" src="/js/artworks.js"></script>
+
+  <script src="/conductor-lol/lol-f2020-artworks2.js"></script>
+
+</head>
+<body>
+  <div id="controller">
+    <div id='master'>
+      <div id='master-fader'></div><span>Master Gain</span>
+      <span id='star-field'></span><span id='cover-blur'></span>
+      <div id='twitch-channel'></div>
+      <textarea id='announcement' type='text' name='announcement' cols="40" rows="5"></textarea><span id='live-writing'></span><span id='announce'></span>
+      <div id='current-question'>Current Question being Asked</div>
+      <textarea id='question' type='text' name='question' cols="40" rows="5"></textarea><span id='ask-a-question'></span>
+      <div id='question-list'></div>
+    </div>
+    <div id='message'>Welcome Conductor</div>
+    <div id='artworks'>
+      <!-- <div id='work-10' class='controls'>
+        <span id='title10'>Title 10</span>
+        <span id='stage10' nexus-ui='toggle'>Staged</span>
+        <span id='play' nexus-ui='button'>Play/Pause</span>
+        <span id='stop10' nexus-ui='button'>Stop</span>
+        <span id='seek10' nexus-ui='number'>Seek</span>
+        <span id='gain10' nexus-ui='slider'>Gain</span>
+      </div> -->
+    </div>
+  </div>
+
+
+  <script>
+   var AudioContext = window.AudioContext || window.webkitAudioContext;
+    var audioCtx = new AudioContext();
+
+		var Hub = require('hub');
+    var hub = new Hub();
+
+    hub.ctx = audioCtx;
+    
+    hub.user.name = 'conductor';
+    hub.user.color = getRandomColor();
+    console.log(hub.user.color);
+    hub.user.location = {
+      x: 0.5,
+      y: 0.5
+    }
+
+    hub.init();
+    hub.register(); 
+
+      // Divs for quick access
+    let controllerDiv = document.getElementById('controller');
+    
+
+  	let sections = ['preConcert', 'performance', 'postConcert'];
+  	let currentSection = 0;
+
+  	let setMessage = (text) => {document.getElementById('message').innerText = text};
+    let messageText = {
+      'preConcert': { default: 'Welcome\npress a number...',
+                      1: 'Welcome Performer\nloading density...', 
+                      2: 'designing interstellar experience...', 
+                      3: 'initiating gravity...',
+                      4: 'Gravity|Density'
+                    },
+      'performance':  { default: 'listen...',
+                          doris: 'Sing it Doris!'
+                        },
+      'postConcert': { default: 'Thank you for listening' }
+    }
+
+     
+    let masterFaderNX = new Nexus.Slider('#master-fader', {
+      'mode': 'absolute'
+    });
+    hub.channel('masterFader', null, null, function(data) {
+      masterFaderNX.value = data.val;
+      // concertSound.masterGain(data.val);
+    });
+    masterFaderNX.on('change', function(v) {
+      // do not send along if not changed from a user interaction.
+      if (masterFaderNX.clicked) {
+        hub.send('masterFader', {
+          val: v
+        });
+      };
+    });
+    
+    let starFieldNX = new Nexus.Button('#star-field', {
+      'mode': 'absolute'
+    });
+    starFieldNX.mode = 'button';
+    starFieldNX.on('change', function(v) {
+      // do not send along if not changed from a user interaction.
+      if (this.clicked) {
+        hub.send('announcement', {
+          star: true,
+          live: true,
+        });
+      } else {
+        hub.send('announcement', {
+          star: true,
+          live: false
+        });
+      }
+    });
+
+    let coverBlurNX = new Nexus.Button('#cover-blur', {
+      'mode': 'absolute'
+    });
+    coverBlurNX.mode = 'button'
+    coverBlurNX.on ('change', function(v) {
+      console.log('coverBlur', v, this, this.clicked)
+      if (this.clicked) {
+        if(v) {
+          hub.send('announcement', {
+            cover: true,
+            live: true
+          });
+        } else {
+          hub.send('announcement', {
+            cover: true,
+            live: false
+          });
+        }
+      };
+    });
+
+    let twitchChannel = new Nexus.Select('#twitch-channel', {
+      // 'size': [100,30],
+      'options': ['allisonification', 'lsuemdm','lsuemdm_duo','lsuemdm_trio','lsuemdm_quartet']
+    })
+    twitchChannel.on('change', (v)=> {
+      console.log(v);
+      hub.send('artwork', {
+        setTwitchChannel: true,
+        channel: v.value
+      })
+      // stagedQuestion.value = v.value;
+    })
+
+
+    function liveWriteChanges() {
+      let anMessage = announcement.value;
+      if(anMessage.length > 100) {
+        anMessage = anMessage.substring(1);  // keep it at 40 characters or below.
+      }
+      hub.send('announcement', {
+        announcement: anMessage,
+        live: true
+      })
+      announcement.value = anMessage;
+    }
+
+    let announcement = document.getElementById('announcement');
+    let liveWritingNX = new Nexus.TextButton('#live-writing', {
+      'size': [150,50],
+      'state': false,
+      'text': 'Live Writing',
+      'alternateText': 'Live Writing!!!'
+    })
+    liveWritingNX.on('change', (v)=> {
+      if(v){
+        console.log('LiveWriting Enabled: ', v, announcement.value);
+        hub.send('liveWriting', {
+          liveWriting: v.state
+        })
+        announcement.addEventListener('input', liveWriteChanges);
+      } else {
+        console.log('LiveWriting Disabled: ', v);
+        announcement.removeEventListener('input', liveWriteChanges);
+      }
+    })
+    let announceNX = new Nexus.TextButton('#announce', {
+      'size': [150,50],
+      'state': false,
+      'text': 'Announce'
+      // 'alternateText': 'Stop'
+    })
+    announceNX.on('change', (v)=> {
+      if(v){
+        console.log('Announce: ', announcement.value);
+        hub.send('announcement', {
+          announcement: announcement.value,
+          live: true
+        })
+        announcement.value = "";
+      }
+    })
+
+
+    let currentQuestion = document.getElementById('current-question');
+    let stagedQuestion = document.getElementById('question');
+    let askNX = new Nexus.TextButton('#ask-a-question', {
+      'size': [150,50],
+      'state': false,
+      'text': 'Ask'
+      // 'alternateText': 'Stop'
+    })
+    askNX.on('change', (v)=> {
+      if(v){
+        console.log("ask: ", stagedQuestion.value)
+        currentQuestion.innerHTML = stagedQuestion.value;
+        hub.send('questions', {
+          currentQuestion: stagedQuestion.value
+        })
+      }
+    })
+    let questionListArray = ['Tell us about your work.'];
+    let questionList = new Nexus.Select('#question-list',{
+      // 'size': [100,30],
+      'options': ['Tell us about your work.']
+    })
+    questionList.on('change', (v)=> {
+      console.log(v);
+      stagedQuestion.value = v.value;
+    })
+
+    hub.channel('questions', null, null, (data)=>{
+      console.log('questions', data)
+      if(data.currentQuestion) {
+        // currentQuestion.innerHTML = data.currentQuestion;
+      }
+      if(data.askQuestion) {
+        questionListArray.push(data.askQuestion);
+        questionList.defineOptions(questionListArray);
+      }
+    })
+    // One Work
+
+    // <span id='title-10'>Title 10</span>
+    //     <span id='staged-10'>Staged</span>
+    //     <span id='play-10'>Play/Pause</span>
+    //     <span id='stop-10'>Stop</span>
+    //     <span id='seek-10'>Seek</span>
+    //     <span id='gain-10'>Gain</span>
+
+    // let work10 = new Nexus.Rack('#work-10')
+    // work10.stage10.on ('change', function(v) {
+    //   console.log(v)
+    //   if (work10.stage10.clicked) {
+    //     hub.send('stageWork', {
+    //       work: 2,
+    //       stage: v
+    //     });
+    //   };
+    // });
+    // work10.play.mode = 'button'
+    // work10.play.on ('change', function(v) {
+    //   console.log(v)
+    //   if (work10.play.clicked) {
+    //     if(v) {
+    //       hub.send('artwork', {
+    //         work: 2,
+    //         play: true
+    //       });
+    //     } else {
+    //       hub.send('artwork', {
+    //       work: 2,
+    //       pause: true
+    //     });
+    //     }
+    //   };
+  	// });
+    // let stageWork10 = new Nexus.Toggle('#stage-10');
+    // stageWork10.on('change', function(v) {
+    //   console.log(v)
+    //   if (stageWork10.clicked) {
+    //     hub.send('stageWork', {
+    //       work: 2,
+    //       stage: v
+    //     });
+    //   };
+  	// });
+    hub.channel('stageWork', null, null, function(data) {
+      // Look through Works and stage it.
+      console.log('stageWork', data);
+      // concertSound.masterGain(data.val);
+    });
+    // var playWork10 = Nexus.Add.Toggle('#work-10',{
+    //   'size': [100,100]
+    // });
+    //  var gainWork10 = Nexus.Add.Slider('#work-10',{
+    //    'size': [25,100]
+    //  });
+
+    
+
+
+
+      // NexusHUB Channel CUE
+		hub.channel('cue', null, null, (data) => { cue(data); });
+
+		function cue(data) {
+			hub.log('Cue', data);
+			switch(data.name){
+				case 'preshow':
+					setMessage(messageText.preConcert[1]);
+					break;
+				case 'starfield':
+					revealStars(true)
+					setMessage(messageText.preConcert[2]);  // Make rotating
+					break;
+				case 'performance': 
+					revealStars(false)
+					setMessage(messageText.performance.default);
+					break;
+				case 'postshow': 
+					setMessage(messageText.postConcert.default);
+					break;
+				case 'demo':
+					break;
+				case 'default':
+					console.log('Sample Command not recognized: ', data.val, data.name);
+			}
+    }
+
+      // NexusHUB enable Channel
+  	hub.channel('enable', null, null, (data) => {enable(data);});
+
+    function enable(data) {
+      if (data.user === hub.user.name || data.user == 'all') {
+        if (data.val == true) {
+          // enable?
+        } else {
+          // disable?
+        }
+      }
+    }
+
+
+    document.querySelector('#title')?.addEventListener('click', async (e) => {
+      await Tone.start()
+      console.log('audio is ready')
+    })
+
+
+    hub.channel('chat', null, null, function(data) {
+      console.log("chat: " + data);
+    });
+
+    hub.channel('glassState', null,null, (data)=> {
+      console.log('glassState', data);
+      masterFaderNX.value = data.masterFader;
+    });
+
+  	    // ******* Sections *******
+  	hub.channel('setSection', null, null, function(data) {
+      console.log("the section is now: " + data);
+      currentSection = data.section;
+      setMessage(messageText[sections[currentSection]].default);
+    });
+
+    hub.channel('setMessage', null, null, function(data) {
+      console.log(data);
+      console.log("the message is now: " + sections[currentSection] + data.message);
+      let sectionText = messageText[sections[currentSection]];
+      setMessage(sectionText[data.section][data.message]);
+      if('instruction' in data) {
+        setInstruction(data.instruction);
+      }
+  	});
+
+    hub.channel('play', null, null, (data) => {
+      // console.log('play:', data);
+      hub.log('play:', data);
+      if(data.val) {
+        // concertSound.playVideo(data.video);
+      } else {
+        // concertSound.pauseVideo(data.video);
+      }
+    });
+
+    hub.channel('playWork', null, null, (data) => {
+      // console.log('play:', data);
+      hub.log('playWork:', data);
+      if(data.val) {
+        // concertSound.playWork(data.work);
+      } else {
+        // concertSound.pauseWork(data.work);
+      }
+    });
+
+    // artwork: {stage: true, play: true, pause: true, stop: true}
+    hub.channel('artwork', null, null, (data) => {
+      hub.log('artwork:', data);
+      if(data.stage) {
+        // stageWork(data.work, data.stage);
+      }
+      if(data.play) {
+        // concertSound.playWork(data.work);
+      }
+      if(data.pause) {
+        // concertSound.pauseWork(data.work);
+      }
+      if(data.stop) {
+        // concertSound.stopWork(data.work);
+      }
+    })
+
+    stageWork = function (workName, stage) {
+      let work = artwork.getWork(workName);
+
+      // if(artwork.staged == undefined) { artwork.staged = false}
+
+      if(stage==false || work.staged) {  // UnStage the Work
+        work.div.classList.remove('staged');
+        if(work.type == 'audio' || work.wave != undefined ){
+          if(work.image != undefined){
+            // artwork.waveDiv.classList.remove('bottom', 'center');
+            // artwork.waveDiv.classList.add('bottom');
+          }
+          // setTimeout((artwork)=>{artwork.wave.drawBuffer()}, 3000, artwork)
+        }
+      } else {    // Stage the work
+        work.div.classList.add('staged');
+        if(work.type == 'audio' || work.wave != undefined ){
+          if(work.image != undefined){
+            // artwork.waveDiv.classList.add('bottom');
+          } else {
+            // artwork.waveDiv.classList.add('center');
+          }
+          // setTimeout((artwork)=>{artwork.wave.drawBuffer()}, 3000, artwork)
+        }
+      }
+      work.staged = stage;
+    }
+  	
+
+
+
+      // Utility Functions
+    function randomItem(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+    
+    function randomTakeItem(list) {
+      let item = list.splice(Math.floor(Math.random() * list.length),1)
+      return item[0];
+    }
+    
+    function getRandomColor() {
+      var letters = '0123456789ABCDEF'.split('');
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // concertPieces = [
+    //   {
+    //     id: 1,
+    //     title: 'Hocket II',
+    //     name: 'hocket2',
+    //     composer: 'Austin, KaHei, Kenny, Scott',
+    //     performers: 'Austin, KaHei, Kenny, Scott',
+    //     type: 'audio',
+    //     file: 'low/Drip.mp3',
+    //     fileHD: 'Drip.wav',
+    //     image: '',
+    //     artistTalk: '',
+    //     divID: 'work-1'
+    //   }, {
+    //     id: 2,
+    //     title: 'Glass Demonstration',
+    //     name: 'glass-demo',
+    //     composer: 'Jesse Allison & Saida',
+    //     type: 'audio',
+    //     file: 'low/Blanched_Backrooms.mp3',
+    //     fileHD: 'Blanched_Backrooms.wav',
+    //     image: '',
+    //     artistTalk: '',
+    //     divID: 'work-2'
+    //   }, {
+    //     id: 3,
+    //     title: 'Choir 360: Meditations',
+    //     name: 'choir-360',
+    //     type: 'stream',
+    //     service: 'youtube',
+    //     channel: 'lsuemdm',
+    //     composer: 'Pauline Oliveros',
+    //     image: '',
+    //     artistTalk: '',
+    //     divID: 'work-3'
+    //   }, {
+    //     id: 4,
+    //     title: 'Live Coding II: Max & Tweakable',
+    //     name: 'lc-2',
+    //     composer: 'Traci & Dylan',
+    //     type: 'audio',
+    //     file: 'low/EtudeHRIRPanoramaV2-C4TE.mp3',
+    //     fileHD: 'EtudeHRIRPanoramaV2-C4TE.wav',
+    //     artistTalk: '',
+    //     divID: 'work-4'
+    //   }, {
+    //     id: 5,
+    //     title: 'Kitchen',
+    //     name: 'kitchen',
+    //     composer: 'Gabe, Kenny',
+    //     type: 'audio',
+    //     file: 'low/Blitzkrieg.mp3',
+    //     fileHD: 'Blitzkrieg.wav',
+    //     image: '',
+    //     artistTalk: '',
+    //     divID: 'work-5'
+    //   }, {
+    //     id: 6,
+    //     title: 'McLuhen Mediates the LOLs',
+    //     name: 'mcluhen',
+    //     composer: 'Dylan, Ka Hei',
+    //     file: 'low/Blitzkrieg.mp3',
+    //     fileHD: 'Blitzkrieg.wav',
+    //     artistTalk: '',
+    //     type: 'audio',
+    //     info: '',
+    //     url: 'https://youtu.be/ygoO0Hg4wAo',
+    //     divID: 'work-6'
+    //   }, {
+    //     id: 7,
+    //     title: 'Telepiano',
+    //     name: 'telepiano',
+    //     composer: 'Austin, Bobby, Kenny, ',
+    //     file: 'low/Blitzkrieg.mp3',
+    //     artistTalk: '',
+    //     type: 'audio',
+    //     info: '',
+    //     url: 'https://youtu.be/ygoO0Hg4wAo',
+    //     divID: 'work-7'
+    //   }, {
+    //     id: 8,
+    //     title: 'Hocket I',
+    //     name: 'hocket-1',
+    //     composer: 'Dylan, Matt, Bobby',
+    //     file: 'low/Blitzkrieg.mp3',
+    //     artistTalk: '',
+    //     type: 'audio',
+    //     info: '',
+    //     url: 'https://youtu.be/ygoO0Hg4wAo',
+    //     divID: 'work-8'
+    //   }, {
+    //     id: 9,
+    //     title: 'Live Coding I: LiveCodeLab ',
+    //     name: 'lc-1',
+    //     composer: 'Mary & Bobby',
+    //     file: 'low/Blitzkrieg.mp3',
+    //     artistTalk: '',
+    //     type: 'audio',
+    //     info: '',
+    //     url: 'https://youtu.be/ygoO0Hg4wAo',
+    //     divID: 'work-9'
+    //   }, {
+    //     id: 10,
+    //     title: 'Primordial Glitches',
+    //     name: 'mcluhen',
+    //     composer: 'Matt Bardin',
+    //     performers: 'The LOLs',
+    //     file: 'low/Blitzkrieg.mp3',
+    //     artistTalk: '',
+    //     type: 'audio',
+    //     info: '',
+    //     url: 'https://youtu.be/ygoO0Hg4wAo',
+    //     divID: 'work-10'
+    //   }, {
+    //     id: 11,
+    //     title: 'Aerial',
+    //     name: 'aerial',
+    //     type: 'browser',
+    //     service: 'twitch',
+    //     channel: 'lsuemdm',
+    //     divID: 'work-11'
+    //   }
+    // ];
+    
+    // // Concert Setup
+    // c4teConcertPieces = [
+    //   {
+    //    id: 1,
+    //    title: 'Drip',
+    //    name: 'drip',
+    //    composer: 'Austin Franklin',
+    //    file: 'Drip.wav',
+    //    image: 'franklin-background.jpg',
+    //    artistTalk: 'franklin-artist-talk.mp4',
+    //    divID: 'work-1'
+    //   }, {
+    //    id: 2,
+    //    title: 'BLanched Backrooms',
+    //    name: 'backrooms',
+    //    composer: 'Robert Chedville',
+    //    file: 'Blanched_Backrooms.wav',
+    //    image: 'pexels-oleg-magni-1040499.jpg',
+    //    artistTalk: 'chedville-artist-talk.mp4',
+    //    divID: 'work-2'
+    //   }, {
+    //    id: 3,
+    //    title: 'Sketches of Breath',
+    //    name: 'sketches',
+    //    composer: 'Ka Hei Chang',
+    //    file: 'Sketches_of_Breath.wav',
+    //    divID: 'work-3'
+    //   }, {
+    //    id: 4,
+    //    title: 'Étude pour un ordinateur seul',
+    //    name: 'etude',
+    //    composer: 'Edgar Berdahl',
+    //    file: 'EtudeHRIRPanoramaV2-C4TE.wav',
+    //    artistTalk: 'berdahl-artist-talk.mp4',
+    //    divID: 'work-4'
+    //   }, {
+    //    id: 5,
+    //    title: 'Blitzkrieg',
+    //    name: 'blitzkrieg',
+    //    composer: 'Scott Nelson',
+    //    file: 'Blitzkrieg.wav',
+    //    artistTalk: 'nelson-artist-talk.mp4',
+    //    divID: 'work-5'
+    //   }, {
+    //    id: 6,
+    //    title: 'Primatives III. Release',
+    //    name: 'release',
+    //    composer: 'Chase Mitchusson',
+    //    file: 'Primitives-Release.mp4',
+    //    type: 'video',
+    //    info: 'Primitives is a piece by Chase Mitchusson composed in VR using the Indeterminate Sample Sequencer, a tool he developed for VR using Unity',
+    //    url: 'https://youtu.be/ygoO0Hg4wAo',
+    //    divID: 'work-6'
+    //   }, {
+    //     id: 7,
+    //     title: 'Live Stream',
+    //     name: 'stream',
+    //     type: 'stream',
+    //     service: 'twitch',
+    //     channel: 'lsuemdm',
+    //     divID: 'stream-1'
+    //   }
+    // ];
+
+    let artwork = new Artworks();
+    // artwork.artworks = concertPieces;
+    artwork.validateWorks();
+    // artwork.loadWorks();
+    hub.send('artwork', {setArtworks: artwork.artworks});
+    
+    for(let work of artwork.artworks) {
+      artwork.generateControlUI(work.name);
+    }
+    // let work = artwork.getWork(3);
+    // artwork.createControlUI(work.name);
+    
+
+  </script>
+</body>
+</html>
+
+
+
