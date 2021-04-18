@@ -8,7 +8,7 @@
     "node": "12.x.x"
   },
   "scripts": {
-    "start": "node concertServer.js",
+    "start": "node ethereal-groves.js",
     "deploy": "gcloud app deploy",
     "lint": "eslint .",
     "fix": "eslint --fix .",
